@@ -1,9 +1,10 @@
 fastapi
 uvicorn
-tensorflow==2.12.0
-
 scikit-learn
 joblib
 numpy
 pydantic
 pandas
+streamlit==1.33.0
+pillow
+requests
