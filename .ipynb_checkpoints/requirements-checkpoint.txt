@@ -5,3 +5,6 @@ joblib
 numpy
 pydantic
 pandas
+streamlit==1.33.0
+pillow
+requests
