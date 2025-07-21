@@ -8,15 +8,15 @@ def load_model_and_tokenizer():
     model_path = os.path.join(base_path, "models", "suicide_detector_model.h5")
     tokenizer_path = os.path.join(base_path, "models", "tokenizer.json")
 
-    # Load model
-   model = load_model(model_path, compile=False)
+    # Load model without optimizer (for deployment safety)
+    model = load_model(model_path, compile=False)
 
-    # Load tokenizer from JSON
+    # Load tokenizer
     with open(tokenizer_path, "r", encoding="utf-8") as f:
         tokenizer_json = json.load(f)
     tokenizer = tokenizer_from_json(tokenizer_json)
 
-    # Ensure this matches your training config
+    # Set maxlen used during training
     maxlen = 200
 
     return model, tokenizer, maxlen
