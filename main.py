@@ -1,3 +1,4 @@
+
 import logging
 import csv
 import os
@@ -6,15 +7,15 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from model_loader import load_model_and_tokenizer
 from preprocessor import preprocess
-import uvicorn  # <-- required for running the app
+import uvicorn
 
-# Load model, tokenizer, and maxlen
+# Load model, tokenizer, and maxlen once at startup
 model, tokenizer, maxlen = load_model_and_tokenizer()
 
 # Initialize FastAPI app
-app = FastAPI()
+app = FastAPI(title="Suicide Ideation Detection API")
 
-# Setup structured logging to a file
+# Setup structured logging
 logging.basicConfig(
     filename="prediction_logs.log",
     level=logging.INFO,
@@ -28,63 +29,58 @@ if not os.path.exists(csv_log_file):
         writer = csv.writer(file)
         writer.writerow(["timestamp", "input_text", "prediction", "probability", "message"])
 
-# In-memory browser history
+# In-memory prediction history (useful for testing or visualization)
 history = []
 
-# Request body schema
+# Input schema
 class TextInput(BaseModel):
     text: str
 
-# Health check endpoint
 @app.get("/")
 def home():
-    return {"message": "Suicide Ideation Detection API running."}
+    return {"message": "✅ Suicide Ideation Detection API is up and running."}
 
-# Prediction endpoint
 @app.post("/predict")
 def predict(input_data: TextInput):
-    if not input_data.text.strip():
+    text = input_data.text.strip()
+    if not text:
         raise HTTPException(status_code=400, detail="Input text is empty.")
 
     try:
-        # Preprocess input and get prediction
-        sequence = preprocess(input_data.text, tokenizer, maxlen)
+        # Preprocess input
+        sequence = preprocess(text, tokenizer, maxlen)
         prediction = model.predict(sequence)[0][0]
         label = int(prediction >= 0.6)
         message = "High risk" if label == 1 else "Low risk"
         probability = float(prediction)
         timestamp = datetime.now().isoformat()
 
-        # Prepare result
         result = {
             "timestamp": timestamp,
-            "input_text": input_data.text,
+            "input_text": text,
             "prediction": label,
             "probability": probability,
             "message": message
         }
 
-        # Save to in-memory history and CSV
+        # Log in memory and CSV
         history.append(result)
         with open(csv_log_file, mode="a", newline="", encoding="utf-8") as file:
             writer = csv.writer(file)
-            writer.writerow([timestamp, input_data.text, label, probability, message])
+            writer.writerow([timestamp, text, label, probability, message])
 
-        # Log the prediction
-        logging.info(f"Prediction: {result}")
+        logging.info(f"Prediction made: {result}")
         return result
 
     except Exception as e:
-        logging.error(f"Error during prediction: {e}")
-        raise HTTPException(status_code=500, detail="Prediction failed.")
+        logging.error(f"Prediction failed: {e}")
+        raise HTTPException(status_code=500, detail="Internal server error during prediction.")
 
-# Endpoint to retrieve recent predictions
 @app.get("/history")
 def get_history():
-    return history[-20:]
+    return history[-20:]  # Return last 20 predictions
 
-# Run with uvicorn when the script is executed directly (e.g., on Railway)
+# Optional: Uvicorn entrypoint for local/dev Docker use
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8000))  # Railway sets this automatically
+    port = int(os.environ.get("PORT", 8000))
     uvicorn.run("main:app", host="0.0.0.0", port=port)
-
