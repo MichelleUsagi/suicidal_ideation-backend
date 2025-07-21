@@ -1,19 +1,27 @@
-# Use an official Python 3.10 image
+# Use official Python image
 FROM python:3.10-slim
 
-# Set working directory
+# Set environment variables
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# Set work directory
 WORKDIR /app
 
-# Copy requirements and install dependencies
+# Install dependencies
 COPY requirements.txt .
-RUN pip install --upgrade pip
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --upgrade pip && \
+    pip install --no-cache-dir -r requirements.txt
 
-# Copy app files
+# Copy all app source code
 COPY . .
 
-# Expose the port FastAPI runs on
-EXPOSE 10000
+# Ensure model file exists (for fail-fast behavior)
+RUN test -f ./models/suicide_detector_model.h5 || (echo "❌ Model file not found!" && exit 1)
 
-# Run the FastAPI app with uvicorn
-CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "10000"]
+# Expose port 8000 for FastAPI
+EXPOSE 8000
+
+# Start FastAPI using uvicorn on port 8000
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+
