@@ -3,7 +3,7 @@ wheel
 fastapi
 uvicorn
 pydantic
-tensorflow
+tensorflow==2.13
 numpy
 scikit-learn
 streamlit
