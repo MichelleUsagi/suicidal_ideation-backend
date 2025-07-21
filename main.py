@@ -1,4 +1,3 @@
-
 import logging
 import csv
 import os
@@ -7,6 +6,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from model_loader import load_model_and_tokenizer
 from preprocessor import preprocess
+import uvicorn  # <-- required for running the app
 
 # Load model, tokenizer, and maxlen
 model, tokenizer, maxlen = load_model_and_tokenizer()
@@ -82,3 +82,9 @@ def predict(input_data: TextInput):
 @app.get("/history")
 def get_history():
     return history[-20:]
+
+# Run with uvicorn when the script is executed directly (e.g., on Railway)
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8000))  # Railway sets this automatically
+    uvicorn.run("main:app", host="0.0.0.0", port=port)
+
