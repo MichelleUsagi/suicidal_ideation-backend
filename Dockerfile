@@ -16,6 +16,10 @@ RUN pip install --upgrade pip && \
 # Copy all app source code
 COPY . .
 
+# Copy model files before checking
+COPY ./models/suicide_detector_model.h5 /app/models/suicide_detector_model.h5
+COPY ./models/tokenizer.json /app/models/tokenizer.json
+
 # Ensure model file exists (for fail-fast behavior)
 RUN test -f ./models/suicide_detector_model.h5 || (echo "❌ Model file not found!" && exit 1)
 
@@ -24,6 +28,3 @@ EXPOSE 8000
 
 # Start FastAPI using uvicorn on port 8000
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
-
-COPY ./models/suicide_detector_model.h5 /app/models/suicide_detector_model.h5
-COPY ./models/tokenizer.json /app/models/tokenizer.json
