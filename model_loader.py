@@ -9,7 +9,7 @@ def load_model_and_tokenizer():
     tokenizer_path = os.path.join(base_path, "models", "tokenizer.json")
 
     # Load model
-    model = load_model(model_path)
+   model = load_model(model_path, compile=False)
 
     # Load tokenizer from JSON
     with open(tokenizer_path, "r", encoding="utf-8") as f:
