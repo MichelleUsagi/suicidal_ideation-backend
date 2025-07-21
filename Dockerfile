@@ -25,3 +25,5 @@ EXPOSE 8000
 # Start FastAPI using uvicorn on port 8000
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
 
+COPY ./models/suicide_detector_model.h5 /app/models/suicide_detector_model.h5
+COPY ./models/tokenizer.json /app/models/tokenizer.json
