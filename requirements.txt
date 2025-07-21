@@ -1,11 +1,10 @@
-setuptools
-wheel
 fastapi
 uvicorn
-pydantic
-tensorflow==2.12.0
+tensorflow==2.13.0
 numpy
 scikit-learn
-requests
+pydantic
 python-multipart
+requests
+
 
