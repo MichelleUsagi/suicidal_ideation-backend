@@ -1,1 +1,13 @@
-# These are required to load your model and tokenizerjoblib==1.2.0scikit-learn==1.7.0numpy==1.24.3tensorflow==2.13keras==2.13.1# APPLICATION PACKAGES# These are required for your FastAPI web serverfastapiuvicorn# OTHER DEPENDENCIES# Add any other packages your code explicitly imports# For example, if you use pandas or a specific tokenizer library:# pandas==2.1.4# nltk==3.8.1
+setuptools
+wheel
+
+joblib==1.2.0
+scikit-learn==1.7.0
+numpy==1.24.3
+tensorflow==2.13
+keras==2.13.1
+fastapi
+uvicorn
+pandas==2.1.4
+nltk==3.8.1
+
